@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ThinkNest — Building Smarter Minds for the Future</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --sun: #FFCA3A;
+    --sky: #4CC9F0;
+    --leaf: #06D6A0;
+    --berry: #FF6B9D;
+    --plum: #7B2D8B;
+    --ink: #1A1A2E;
+    --cream: #FFFBF2;
+    --cloud: #F0F4FF;
+    --soft: #E8F5E9;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2.5rem;
+    background: rgba(255,251,242,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 2px solid var(--sun);
+  }
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-size: 1.7rem; font-weight: 900;
+    color: var(--plum);
+    display: flex; align-items: center; gap: .4rem;
+  }
+  .logo span { color: var(--sun); }
+  .logo .nest-icon { font-size: 1.5rem; }
+  nav ul { list-style: none; display: flex; gap: 2rem; }
+  nav ul li a {
+    text-decoration: none; font-weight: 700; font-size: .95rem;
+    color: var(--ink); transition: color .2s;
+  }
+  nav ul li a:hover { color: var(--plum); }
+  .nav-cta {
+    background: var(--plum); color: #fff !important;
+    padding: .5rem 1.3rem; border-radius: 50px;
+    transition: background .2s, transform .2s !important;
+  }
+  .nav-cta:hover { background: var(--berry) !important; transform: scale(1.05); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center; gap: 3rem;
+    padding: 8rem 2.5rem 4rem;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -100px; right: -150px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(76,201,240,.18) 0%, transparent 70%);
+    border-radius: 50%; pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -80px; left: -100px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(255,202,58,.15) 0%, transparent 70%);
+    border-radius: 50%; pointer-events: none;
+  }
+  .hero-text { position: relative; z-index: 1; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: .5rem;
+    background: var(--sun); color: var(--ink);
+    padding: .4rem 1rem; border-radius: 50px;
+    font-size: .85rem; font-weight: 800;
+    margin-bottom: 1.5rem;
+    animation: popIn .6s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2.8rem, 5vw, 4.2rem);
+    line-height: 1.1; font-weight: 900;
+    margin-bottom: 1.2rem;
+    animation: slideUp .7s .1s cubic-bezier(.34,1.2,.64,1) both;
+  }
+  h1 .accent { color: var(--plum); }
+  h1 .wavy {
+    position: relative; display: inline-block;
+    color: var(--berry);
+  }
+  h1 .wavy::after {
+    content: '';
+    position: absolute; left: 0; bottom: -4px; right: 0; height: 4px;
+    background: url("data:image/svg+xml,%3Csvg width='80' height='4' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 2 Q10 0 20 2 Q30 4 40 2 Q50 0 60 2 Q70 4 80 2' stroke='%23FF6B9D' fill='none' stroke-width='2.5'/%3E%3C/svg%3E") repeat-x center;
+  }
+  .hero-sub {
+    font-size: 1.15rem; color: #555; line-height: 1.7;
+    margin-bottom: 2rem;
+    animation: slideUp .7s .2s cubic-bezier(.34,1.2,.64,1) both;
+  }
+  .hero-actions {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    animation: slideUp .7s .3s cubic-bezier(.34,1.2,.64,1) both;
+  }
+  .btn-primary {
+    background: var(--plum); color: #fff;
+    padding: .9rem 2rem; border-radius: 50px;
+    font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1rem;
+    border: none; cursor: pointer;
+    box-shadow: 0 8px 20px rgba(123,45,139,.3);
+    transition: transform .2s, box-shadow .2s;
+    text-decoration: none; display: inline-flex; align-items: center; gap: .5rem;
+  }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 14px 28px rgba(123,45,139,.35); }
+  .btn-secondary {
+    background: transparent; color: var(--plum);
+    padding: .9rem 2rem; border-radius: 50px;
+    font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1rem;
+    border: 2.5px solid var(--plum); cursor: pointer;
+    transition: background .2s, color .2s;
+    text-decoration: none;
+  }
+  .btn-secondary:hover { background: var(--plum); color: #fff; }
+
+  /* Hero visual */
+  .hero-visual {
+    position: relative; z-index: 1;
+    animation: floatIn .8s .2s cubic-bezier(.34,1.1,.64,1) both;
+  }
+  .device-frame {
+    background: var(--ink); border-radius: 28px;
+    padding: 1rem;
+    box-shadow: 0 30px 80px rgba(26,26,46,.25), 0 0 0 6px #fff;
+    position: relative;
+  }
+  .device-screen {
+    background: var(--cloud); border-radius: 18px; overflow: hidden;
+    aspect-ratio: 4/3;
+    display: flex; flex-direction: column;
+  }
+  .device-topbar {
+    background: var(--plum); padding: .8rem 1.2rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .device-topbar .d-logo {
+    font-family: 'Fraunces', serif; color: #fff; font-weight: 900; font-size: 1rem;
+  }
+  .device-topbar .d-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--sun); display: flex; align-items: center; justify-content: center;
+    font-size: .75rem; font-weight: 800; color: var(--ink);
+  }
+  .device-body { flex: 1; padding: 1rem; display: flex; flex-direction: column; gap: .8rem; }
+  .chat-bubble {
+    display: flex; gap: .6rem; align-items: flex-start;
+  }
+  .chat-bubble.user { flex-direction: row-reverse; }
+  .chat-icon {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: .9rem;
+  }
+  .chat-icon.ai { background: var(--plum); color: #fff; }
+  .chat-icon.student { background: var(--sun); color: var(--ink); }
+  .chat-msg {
+    background: #fff; border-radius: 14px; padding: .6rem .9rem;
+    font-size: .78rem; line-height: 1.5; max-width: 72%;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .chat-bubble.user .chat-msg { background: var(--plum); color: #fff; border-radius: 14px 4px 14px 14px; }
+  .chat-bubble.ai .chat-msg { border-radius: 4px 14px 14px 14px; }
+  .typing { display: flex; gap: 4px; align-items: center; padding: .4rem .6rem; }
+  .typing span {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--plum); opacity: .5;
+    animation: bounce 1.2s infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: .2s; }
+  .typing span:nth-child(3) { animation-delay: .4s; }
+
+  .device-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; padding: .5rem 1rem 1rem;
+  }
+  .d-stat {
+    background: #fff; border-radius: 12px; padding: .6rem;
+    text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  }
+  .d-stat .d-num { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 900; color: var(--plum); }
+  .d-stat .d-lbl { font-size: .62rem; color: #888; font-weight: 700; }
+
+  /* Floating badges */
+  .float-badge {
+    position: absolute; background: #fff;
+    border-radius: 14px; padding: .6rem 1rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    display: flex; align-items: center; gap: .5rem;
+    font-size: .8rem; font-weight: 700; white-space: nowrap;
+  }
+  .float-badge.b1 { top: -20px; left: -30px; animation: float 3s ease-in-out infinite; }
+  .float-badge.b2 { bottom: 40px; right: -30px; animation: float 3s ease-in-out infinite .8s; }
+  .float-badge.b3 { top: 50%; left: -50px; transform: translateY(-50%); animation: float 3s ease-in-out infinite 1.4s; }
+
+  /* ── STATS STRIP ── */
+  .stats-strip {
+    background: var(--plum); color: #fff;
+    padding: 2.5rem 2.5rem;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; text-align: center;
+  }
+  .strip-num {
+    font-family: 'Fraunces', serif; font-size: 2.8rem; font-weight: 900;
+    color: var(--sun);
+  }
+  .strip-lbl { font-size: .9rem; opacity: .8; font-weight: 600; margin-top: .2rem; }
+
+  /* ── SECTION COMMONS ── */
+  section { padding: 6rem 2.5rem; }
+  .section-tag {
+    display: inline-block; background: var(--sun);
+    color: var(--ink); padding: .3rem .9rem; border-radius: 50px;
+    font-size: .8rem; font-weight: 800; margin-bottom: 1rem;
+  }
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.8rem, 3vw, 2.8rem); font-weight: 900;
+    line-height: 1.2; margin-bottom: 1rem;
+  }
+  .section-sub { font-size: 1.05rem; color: #666; max-width: 560px; line-height: 1.7; }
+  .centered { text-align: center; }
+  .centered .section-sub { margin: 0 auto; }
+
+  /* ── FEATURES ── */
+  .features { background: var(--cloud); }
+  .features-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem; margin-top: 3rem;
+  }
+  .feat-card {
+    background: #fff; border-radius: 20px; padding: 1.8rem;
+    border: 2px solid transparent;
+    transition: border-color .25s, transform .25s, box-shadow .25s;
+    cursor: default;
+  }
+  .feat-card:hover { border-color: var(--plum); transform: translateY(-5px); box-shadow: 0 16px 40px rgba(123,45,139,.12); }
+  .feat-icon {
+    width: 56px; height: 56px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem; margin-bottom: 1rem;
+  }
+  .feat-title { font-weight: 800; font-size: 1.05rem; margin-bottom: .4rem; }
+  .feat-desc { font-size: .9rem; color: #666; line-height: 1.6; }
+
+  /* ── HOW IT WORKS ── */
+  .how { background: var(--cream); }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 3rem; position: relative; }
+  .steps::before {
+    content: '';
+    position: absolute; top: 36px; left: 10%; right: 10%; height: 3px;
+    background: repeating-linear-gradient(90deg, var(--plum) 0, var(--plum) 8px, transparent 8px, transparent 16px);
+    opacity: .25;
+  }
+  .step { text-align: center; position: relative; }
+  .step-num {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: var(--plum); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-size: 1.6rem; font-weight: 900;
+    margin: 0 auto 1.2rem;
+    box-shadow: 0 8px 20px rgba(123,45,139,.25);
+  }
+  .step:nth-child(2) .step-num { background: var(--sky); color: var(--ink); }
+  .step:nth-child(3) .step-num { background: var(--leaf); color: var(--ink); }
+  .step:nth-child(4) .step-num { background: var(--berry); }
+  .step-title { font-weight: 800; font-size: 1rem; margin-bottom: .4rem; }
+  .step-desc { font-size: .88rem; color: #666; line-height: 1.6; }
+
+  /* ── SUBJECTS ── */
+  .subjects { background: var(--soft); }
+  .subjects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-top: 3rem; }
+  .subj-card {
+    background: #fff; border-radius: 20px; padding: 1.6rem 1.2rem;
+    text-align: center; cursor: default;
+    transition: transform .2s, box-shadow .2s;
+    border: 2px solid #e8e8e8;
+  }
+  .subj-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,.1); }
+  .subj-emoji { font-size: 2.5rem; margin-bottom: .8rem; display: block; }
+  .subj-name { font-weight: 800; font-size: .95rem; color: var(--ink); margin-bottom: .3rem; }
+  .subj-count { font-size: .8rem; color: #888; }
+  .teacher-tag {
+    display: inline-block; background: var(--sky); color: var(--ink);
+    padding: .2rem .6rem; border-radius: 50px;
+    font-size: .7rem; font-weight: 800; margin-top: .4rem;
+  }
+
+  /* ── ROLES ── */
+  .roles { background: var(--cloud); }
+  .roles-tabs { display: flex; gap: .8rem; margin-bottom: 2.5rem; flex-wrap: wrap; }
+  .role-tab {
+    padding: .6rem 1.4rem; border-radius: 50px; border: 2.5px solid #ddd;
+    font-family: 'Nunito', sans-serif; font-weight: 800; font-size: .9rem;
+    cursor: pointer; transition: all .2s; background: #fff; color: var(--ink);
+  }
+  .role-tab.active { background: var(--plum); color: #fff; border-color: var(--plum); }
+  .role-content { display: none; }
+  .role-content.active { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+  .role-list { list-style: none; display: flex; flex-direction: column; gap: .9rem; }
+  .role-list li {
+    display: flex; align-items: flex-start; gap: .8rem;
+    font-size: .95rem; line-height: 1.5;
+  }
+  .role-list li .check {
+    width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+    background: var(--leaf); display: flex; align-items: center; justify-content: center;
+    font-size: .75rem; color: #fff; font-weight: 900;
+  }
+  .role-visual {
+    background: #fff; border-radius: 24px; padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,.08);
+  }
+  .role-visual h4 { font-family: 'Fraunces', serif; font-size: 1.2rem; margin-bottom: 1rem; color: var(--plum); }
+  .mini-progress { display: flex; flex-direction: column; gap: .8rem; }
+  .mini-bar-row { display: flex; align-items: center; gap: .8rem; font-size: .85rem; }
+  .mini-bar-label { width: 90px; font-weight: 700; color: #555; flex-shrink: 0; }
+  .mini-bar-track { flex: 1; background: #eee; border-radius: 50px; height: 10px; overflow: hidden; }
+  .mini-bar-fill { height: 100%; border-radius: 50px; }
+  .mini-bar-val { font-weight: 800; font-size: .85rem; color: var(--plum); width: 32px; text-align: right; }
+
+  /* ── GAMIFICATION ── */
+  .gamify { background: var(--ink); color: #fff; position: relative; overflow: hidden; }
+  .gamify::before {
+    content: '🌟⭐✨💫🎯🏆🎮🧠';
+    position: absolute; top: 0; right: 0; bottom: 0;
+    font-size: 5rem; opacity: .05; letter-spacing: 1rem;
+    writing-mode: vertical-lr; overflow: hidden;
+    pointer-events: none;
+  }
+  .gamify .section-title { color: #fff; }
+  .gamify .section-sub { color: rgba(255,255,255,.65); }
+  .gamify .section-tag { background: var(--berry); }
+  .badges-grid { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-top: 3rem; }
+  .badge-item {
+    background: rgba(255,255,255,.07); border: 1.5px solid rgba(255,255,255,.12);
+    border-radius: 20px; padding: 1.5rem 1.2rem;
+    text-align: center; min-width: 130px; flex: 1;
+    transition: background .2s, transform .2s;
+  }
+  .badge-item:hover { background: rgba(255,255,255,.14); transform: translateY(-4px); }
+  .badge-emoji { font-size: 2.5rem; display: block; margin-bottom: .6rem; }
+  .badge-name { font-weight: 800; font-size: .85rem; color: var(--sun); margin-bottom: .3rem; }
+  .badge-desc { font-size: .75rem; color: rgba(255,255,255,.55); }
+  .gamify-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
+  .g-stat { text-align: center; }
+  .g-num { font-family: 'Fraunces', serif; font-size: 2.5rem; font-weight: 900; color: var(--sun); }
+  .g-lbl { font-size: .85rem; color: rgba(255,255,255,.55); }
+
+  /* ── PRICING ── */
+  .pricing { background: var(--cream); }
+  .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 800px; margin: 3rem auto 0; }
+  .price-card {
+    background: #fff; border-radius: 24px; padding: 2.5rem;
+    border: 2.5px solid #e8e8e8; position: relative;
+    transition: transform .2s;
+  }
+  .price-card:hover { transform: translateY(-5px); }
+  .price-card.featured { border-color: var(--plum); background: var(--plum); color: #fff; }
+  .price-card.featured .price-sub { color: rgba(255,255,255,.7); }
+  .popular-tag {
+    position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+    background: var(--sun); color: var(--ink);
+    padding: .3rem .9rem; border-radius: 50px; font-size: .78rem; font-weight: 800;
+    white-space: nowrap;
+  }
+  .price-tier { font-size: .85rem; font-weight: 800; opacity: .6; margin-bottom: .6rem; text-transform: uppercase; letter-spacing: .08em; }
+  .price-amount { font-family: 'Fraunces', serif; font-size: 3rem; font-weight: 900; line-height: 1; }
+  .price-amount sup { font-size: 1.4rem; vertical-align: super; }
+  .price-period { font-size: .85rem; opacity: .6; margin-bottom: 1.5rem; }
+  .price-features { list-style: none; display: flex; flex-direction: column; gap: .7rem; margin-bottom: 2rem; }
+  .price-features li { display: flex; align-items: center; gap: .6rem; font-size: .9rem; }
+  .price-features li .pf-icon { font-size: 1rem; }
+  .price-card.featured .price-features li .pf-icon { color: var(--sun); }
+  .price-btn {
+    width: 100%; padding: .85rem; border-radius: 50px; border: none; cursor: pointer;
+    font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1rem;
+    transition: transform .2s, opacity .2s;
+  }
+  .price-btn:hover { transform: scale(1.03); }
+  .price-btn.outline { background: transparent; border: 2.5px solid var(--plum); color: var(--plum); }
+  .price-btn.filled { background: var(--sun); color: var(--ink); }
+  .price-sub { font-size: .82rem; color: #888; margin-top: .6rem; }
+
+  /* ── CTA ── */
+  .cta-section {
+    background: linear-gradient(135deg, var(--plum) 0%, #4B0082 100%);
+    color: #fff; text-align: center; padding: 6rem 2.5rem;
+    position: relative; overflow: hidden;
+  }
+  .cta-section::before {
+    content: '';
+    position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(255,202,58,.15) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .cta-section .section-title { color: #fff; font-size: clamp(2rem, 4vw, 3.2rem); }
+  .cta-section p { color: rgba(255,255,255,.75); font-size: 1.1rem; margin: 1rem 0 2.5rem; }
+  .cta-btns { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+  .cta-section .btn-primary { background: var(--sun); color: var(--ink); box-shadow: 0 8px 24px rgba(255,202,58,.3); }
+  .cta-section .btn-secondary { border-color: rgba(255,255,255,.5); color: #fff; }
+  .cta-section .btn-secondary:hover { background: rgba(255,255,255,.15); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink); color: rgba(255,255,255,.6);
+    padding: 3rem 2.5rem 2rem;
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2rem;
+  }
+  .footer-brand .logo { color: #fff; margin-bottom: .8rem; }
+  .footer-brand p { font-size: .88rem; line-height: 1.7; max-width: 240px; }
+  footer h5 { color: #fff; font-weight: 800; margin-bottom: 1rem; font-size: .9rem; }
+  footer ul { list-style: none; display: flex; flex-direction: column; gap: .6rem; }
+  footer ul li a { color: rgba(255,255,255,.55); text-decoration: none; font-size: .85rem; transition: color .2s; }
+  footer ul li a:hover { color: var(--sun); }
+  .footer-bottom {
+    background: var(--ink); color: rgba(255,255,255,.35);
+    text-align: center; padding: 1.2rem; font-size: .82rem;
+    border-top: 1px solid rgba(255,255,255,.08);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes popIn { from { opacity: 0; transform: scale(.5); } to { opacity: 1; transform: scale(1); } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes floatIn { from { opacity: 0; transform: translateX(60px) rotate(3deg); } to { opacity: 1; transform: translateX(0) rotate(0); } }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav ul { display: none; }
+    .hero { grid-template-columns: 1fr; padding-top: 6rem; }
+    .hero-visual { display: none; }
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+    .steps { grid-template-columns: repeat(2, 1fr); }
+    .steps::before { display: none; }
+    .role-content.active { grid-template-columns: 1fr; }
+    .pricing-grid { grid-template-columns: 1fr; max-width: 420px; }
+    footer { grid-template-columns: 1fr 1fr; }
+    .gamify-stats { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    section { padding: 4rem 1.2rem; }
+    nav { padding: 1rem 1.2rem; }
+    .hero { padding: 5rem 1.2rem 3rem; }
+    .stats-strip { grid-template-columns: 1fr; padding: 2rem 1.2rem; }
+    footer { grid-template-columns: 1fr; }
+  }
+
+  /* Scroll reveal */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity .6s, transform .6s; }
+  .reveal.visible { opacity: 1; transform: none; }
+</style>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <span class="nest-icon">🪺</span>
+    Think<span>Nest</span>
+  </div>
+  <ul>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#subjects">Subjects</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#" onclick="TN.auth('login');return false">Log in</a></li>
+    <li><a href="#" class="nav-cta" onclick="TN.cta();return false">Get Started</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-badge">🧠 AI-Powered Learning</div>
+    <h1>
+      Building <span class="accent">Smarter</span><br>
+      Minds for the<br>
+      <span class="wavy">Future</span>
+    </h1>
+    <p class="hero-sub">
+      ThinkNest gives every student their own intelligent tutor — one that adapts, explains, and grows with them. No more memorizing. Real understanding.
+    </p>
+    <div class="hero-actions">
+      <a href="#" class="btn-primary" onclick="TN.auth('register');return false">🚀 Start for Free</a>
+      <a href="#how" class="btn-secondary">See How It Works</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <!-- Floating badges -->
+    <div class="float-badge b1">🏆 Top Learner!</div>
+    <div class="float-badge b2">🔥 7-Day Streak</div>
+    <div class="float-badge b3">⭐ 95% in Maths</div>
+
+    <div class="device-frame">
+      <div class="device-screen">
+        <div class="device-topbar">
+          <div class="d-logo">🪺 ThinkNest</div>
+          <div class="d-avatar">AA</div>
+        </div>
+        <div class="device-body">
+          <div class="chat-bubble ai">
+            <div class="chat-icon ai">🤖</div>
+            <div class="chat-msg">Hi Amara! Let's tackle fractions today. What part confuses you most? 😊</div>
+          </div>
+          <div class="chat-bubble user">
+            <div class="chat-icon student">👧</div>
+            <div class="chat-msg">I don't get why ½ + ⅓ isn't 2/5</div>
+          </div>
+          <div class="chat-bubble ai">
+            <div class="chat-icon ai">🤖</div>
+            <div class="chat-msg">Great question! Think of it like pizza slices — the bottoms need to match first. We call that a common denominator...</div>
+          </div>
+          <div class="chat-bubble ai">
+            <div class="chat-icon ai">🤖</div>
+            <div class="typing"><span></span><span></span><span></span></div>
+          </div>
+        </div>
+        <div class="device-stats">
+          <div class="d-stat"><div class="d-num">14</div><div class="d-lbl">Lessons Done</div></div>
+          <div class="d-stat"><div class="d-num">87%</div><div class="d-lbl">Avg Score</div></div>
+          <div class="d-stat"><div class="d-num">🔥5</div><div class="d-lbl">Day Streak</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip reveal">
+  <div>
+    <div class="strip-num">50K+</div>
+    <div class="strip-lbl">Active Students</div>
+  </div>
+  <div>
+    <div class="strip-num">98%</div>
+    <div class="strip-lbl">Parent Satisfaction</div>
+  </div>
+  <div>
+    <div class="strip-num">200+</div>
+    <div class="strip-lbl">Expert Teachers</div>
+  </div>
+  <div>
+    <div class="strip-num">4.9★</div>
+    <div class="strip-lbl">App Store Rating</div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="centered reveal">
+    <div class="section-tag">✨ Core Features</div>
+    <h2 class="section-title">Everything a Student Needs to Thrive</h2>
+    <p class="section-sub">From AI tutoring to teacher content and brain training — ThinkNest brings the whole school into one place.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feat-card reveal">
+      <div class="feat-icon" style="background:#EDE9FF;">🤖</div>
+      <div class="feat-title">AI Tutor</div>
+      <div class="feat-desc">A chat-based tutor that answers questions anytime, explains in simple language, and guides students step by step.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon" style="background:#FFF3E0;">🎯</div>
+      <div class="feat-title">Diagnostic Assessment</div>
+      <div class="feat-desc">A short entry test identifies each student's strengths and gaps, then builds their personalized learning path automatically.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon" style="background:#E8F5E9;">📚</div>
+      <div class="feat-title">Adaptive Learning Path</div>
+      <div class="feat-desc">Difficulty adjusts based on performance. Weak areas get more attention. Every student moves at their own pace.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon" style="background:#E3F2FD;">🧑‍🏫</div>
+      <div class="feat-title">Teacher Content System</div>
+      <div class="feat-desc">Teachers create and upload lessons, quizzes, and notes. Students access human-crafted content alongside AI materials.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon" style="background:#FCE4EC;">🧠</div>
+      <div class="feat-title">Daily Brain Training</div>
+      <div class="feat-desc">Short exercises for memory, logic, problem-solving, and reading comprehension — every single day.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon" style="background:#F3E5F5;">📊</div>
+      <div class="feat-title">Progress Dashboard</div>
+      <div class="feat-desc">Students and parents see lesson completions, quiz scores, streaks, and performance trends in real time.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon" style="background:#E0F7FA;">🏆</div>
+      <div class="feat-title">Gamification</div>
+      <div class="feat-desc">Points, badges, levels, and streak rewards keep students motivated and coming back every day.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon" style="background:#FFFDE7;">👨‍👩‍👧</div>
+      <div class="feat-title">Parent Portal</div>
+      <div class="feat-desc">Parents create and manage profiles, monitor progress, and stay informed — all without sitting beside their child.</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="centered reveal">
+    <div class="section-tag">📋 The Process</div>
+    <h2 class="section-title">Up and Running in Minutes</h2>
+    <p class="section-sub">From sign-up to personalized lessons in four simple steps.</p>
+  </div>
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num">1</div>
+      <div class="step-title">Create a Profile</div>
+      <div class="step-desc">Students or parents sign up and set up a profile — age, class level, and learning goals included.</div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">2</div>
+      <div class="step-title">Take the Diagnostic</div>
+      <div class="step-desc">A short, smart assessment pinpoints exactly where each student stands across core subjects.</div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">3</div>
+      <div class="step-title">Get a Learning Path</div>
+      <div class="step-desc">ThinkNest auto-generates a personalized curriculum — structured, focused, and adaptive.</div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">4</div>
+      <div class="step-title">Learn Every Day</div>
+      <div class="step-desc">Lessons, quizzes, AI chat, and brain training — all in one place, every single day.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SUBJECTS -->
+<section class="subjects" id="subjects">
+  <div class="centered reveal">
+    <div class="section-tag">📖 Subjects</div>
+    <h2 class="section-title">Core Subjects — Plus Teacher-Created Ones</h2>
+    <p class="section-sub">Default subjects are always available. Teachers expand the library for their students.</p>
+  </div>
+  <div class="subjects-grid reveal">
+    <div class="subj-card">
+      <span class="subj-emoji">➕</span>
+      <div class="subj-name">Mathematics</div>
+      <div class="subj-count">120+ lessons</div>
+    </div>
+    <div class="subj-card">
+      <span class="subj-emoji">📝</span>
+      <div class="subj-name">English Language</div>
+      <div class="subj-count">95+ lessons</div>
+    </div>
+    <div class="subj-card">
+      <span class="subj-emoji">🔬</span>
+      <div class="subj-name">Basic Science</div>
+      <div class="subj-count">80+ lessons</div>
+    </div>
+    <div class="subj-card">
+      <span class="subj-emoji">🌍</span>
+      <div class="subj-name">Social Studies</div>
+      <div class="subj-count">70+ lessons</div>
+    </div>
+    <div class="subj-card">
+      <span class="subj-emoji">🎨</span>
+      <div class="subj-name">Creative Arts</div>
+      <div class="subj-count">Teacher content</div>
+      <span class="teacher-tag">👩‍🏫 Teacher Added</span>
+    </div>
+    <div class="subj-card">
+      <span class="subj-emoji">🖥️</span>
+      <div class="subj-name">Computer Studies</div>
+      <div class="subj-count">Teacher content</div>
+      <span class="teacher-tag">👩‍🏫 Teacher Added</span>
+    </div>
+    <div class="subj-card">
+      <span class="subj-emoji">🌱</span>
+      <div class="subj-name">Agricultural Sci.</div>
+      <div class="subj-count">Teacher content</div>
+      <span class="teacher-tag">👩‍🏫 Teacher Added</span>
+    </div>
+    <div class="subj-card" style="border-style: dashed; border-color: var(--plum);">
+      <span class="subj-emoji">➕</span>
+      <div class="subj-name" style="color:var(--plum);">Add a Subject</div>
+      <div class="subj-count">Teachers can expand</div>
+    </div>
+  </div>
+</section>
+
+<!-- ROLES -->
+<section class="roles" id="roles">
+  <div class="reveal">
+    <div class="section-tag">👥 For Everyone</div>
+    <h2 class="section-title">Built for Students, Parents & Teachers</h2>
+    <p class="section-sub">Each role gets a tailored experience that fits exactly what they need.</p>
+  </div>
+  <div class="roles-tabs reveal" style="margin-top:2rem;">
+    <button class="role-tab active" onclick="switchRole('student', this)">🎒 Students</button>
+    <button class="role-tab" onclick="switchRole('parent', this)">👨‍👩‍👧 Parents</button>
+    <button class="role-tab" onclick="switchRole('teacher', this)">🧑‍🏫 Teachers</button>
+  </div>
+
+  <div class="role-content active" id="role-student">
+    <div>
+      <ul class="role-list">
+        <li><div class="check">✓</div><span>Chat with the AI tutor anytime for instant help</span></li>
+        <li><div class="check">✓</div><span>Follow a learning path built just for you</span></li>
+        <li><div class="check">✓</div><span>Take quizzes and get instant feedback</span></li>
+        <li><div class="check">✓</div><span>Do daily brain training exercises</span></li>
+        <li><div class="check">✓</div><span>Earn badges, points, and level up</span></li>
+        <li><div class="check">✓</div><span>Access content from your own teachers</span></li>
+      </ul>
+    </div>
+    <div class="role-visual">
+      <h4>📊 Amara's Progress This Week</h4>
+      <div class="mini-progress">
+        <div class="mini-bar-row"><div class="mini-bar-label">Mathematics</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:82%;background:var(--plum);"></div></div><div class="mini-bar-val">82%</div></div>
+        <div class="mini-bar-row"><div class="mini-bar-label">English</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:91%;background:var(--sky);"></div></div><div class="mini-bar-val">91%</div></div>
+        <div class="mini-bar-row"><div class="mini-bar-label">Science</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:65%;background:var(--leaf);"></div></div><div class="mini-bar-val">65%</div></div>
+        <div class="mini-bar-row"><div class="mini-bar-label">Soc. Studies</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:78%;background:var(--berry);"></div></div><div class="mini-bar-val">78%</div></div>
+      </div>
+      <p style="margin-top:1rem;font-size:.82rem;color:#888;">🔥 5-day learning streak! Keep it up.</p>
+    </div>
+  </div>
+
+  <div class="role-content" id="role-parent">
+    <div>
+      <ul class="role-list">
+        <li><div class="check">✓</div><span>Create and manage multiple child profiles</span></li>
+        <li><div class="check">✓</div><span>View detailed progress reports anytime</span></li>
+        <li><div class="check">✓</div><span>See quiz scores, streaks, and weak areas</span></li>
+        <li><div class="check">✓</div><span>Get performance alerts and weekly summaries</span></li>
+        <li><div class="check">✓</div><span>Manage subscription and billing</span></li>
+        <li><div class="check">✓</div><span>Know exactly where your child needs support</span></li>
+      </ul>
+    </div>
+    <div class="role-visual">
+      <h4>👨‍👩‍👧 Parent Overview</h4>
+      <div style="display:flex;flex-direction:column;gap:.7rem;">
+        <div style="background:var(--cloud);border-radius:12px;padding:.8rem;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-weight:700;font-size:.9rem;">👧 Amara</span>
+          <span style="background:var(--leaf);color:#fff;padding:.2rem .7rem;border-radius:50px;font-size:.78rem;font-weight:800;">On Track ✓</span>
+        </div>
+        <div style="background:var(--cloud);border-radius:12px;padding:.8rem;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-weight:700;font-size:.9rem;">👦 Emeka</span>
+          <span style="background:var(--sun);color:var(--ink);padding:.2rem .7rem;border-radius:50px;font-size:.78rem;font-weight:800;">Needs Help ⚠️</span>
+        </div>
+        <div style="background:var(--cloud);border-radius:12px;padding:.8rem;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-weight:700;font-size:.9rem;">📅 This Week</span>
+          <span style="font-size:.85rem;color:#666;">12 lessons completed</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="role-content" id="role-teacher">
+    <div>
+      <ul class="role-list">
+        <li><div class="check">✓</div><span>Add new subjects beyond the defaults</span></li>
+        <li><div class="check">✓</div><span>Create and upload structured lessons and notes</span></li>
+        <li><div class="check">✓</div><span>Build quizzes with multiple question types</span></li>
+        <li><div class="check">✓</div><span>Organize content by class and topic</span></li>
+        <li><div class="check">✓</div><span>Edit and update your content anytime</span></li>
+        <li><div class="check">✓</div><span>Earn revenue from premium content (coming soon)</span></li>
+      </ul>
+    </div>
+    <div class="role-visual">
+      <h4>🧑‍🏫 Teacher Content Studio</h4>
+      <div style="display:flex;flex-direction:column;gap:.7rem;">
+        <div style="background:var(--soft);border-radius:12px;padding:.8rem;">
+          <div style="font-weight:800;font-size:.85rem;margin-bottom:.3rem;">📄 Introduction to Photosynthesis</div>
+          <div style="font-size:.75rem;color:#666;">JSS 2 · Science · 3 sections · 8 questions</div>
+        </div>
+        <div style="background:var(--soft);border-radius:12px;padding:.8rem;">
+          <div style="font-weight:800;font-size:.85rem;margin-bottom:.3rem;">📄 Nigerian History: 1960 Independence</div>
+          <div style="font-size:.75rem;color:#666;">JSS 3 · Social Studies · 5 sections · 12 questions</div>
+        </div>
+        <div style="border:2px dashed var(--plum);border-radius:12px;padding:.8rem;text-align:center;cursor:pointer;color:var(--plum);font-weight:800;font-size:.85rem;">+ Create New Lesson</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GAMIFICATION -->
+<section class="gamify" id="gamify">
+  <div class="centered reveal">
+    <div class="section-tag">🎮 Gamification</div>
+    <h2 class="section-title">Learning Should Feel Like Winning</h2>
+    <p class="section-sub">Points, badges, streaks, and levels keep students motivated — every single day.</p>
+  </div>
+  <div class="gamify-stats reveal">
+    <div class="g-stat"><div class="g-num">2.1M</div><div class="g-lbl">Points Earned This Month</div></div>
+    <div class="g-stat"><div class="g-num">18K</div><div class="g-lbl">Badges Unlocked</div></div>
+    <div class="g-stat"><div class="g-num">94%</div><div class="g-lbl">Daily Return Rate</div></div>
+  </div>
+  <div class="badges-grid reveal" style="margin-top:3rem;">
+    <div class="badge-item"><span class="badge-emoji">🔥</span><div class="badge-name">Streak Master</div><div class="badge-desc">7 days in a row</div></div>
+    <div class="badge-item"><span class="badge-emoji">🧠</span><div class="badge-name">Deep Thinker</div><div class="badge-desc">10 brain trainings</div></div>
+    <div class="badge-item"><span class="badge-emoji">⭐</span><div class="badge-name">Quiz Champion</div><div class="badge-desc">5 perfect scores</div></div>
+    <div class="badge-item"><span class="badge-emoji">📚</span><div class="badge-name">Bookworm</div><div class="badge-desc">20 lessons done</div></div>
+    <div class="badge-item"><span class="badge-emoji">🚀</span><div class="badge-name">Speed Learner</div><div class="badge-desc">3 topics in one day</div></div>
+    <div class="badge-item"><span class="badge-emoji">🏆</span><div class="badge-name">Top of Class</div><div class="badge-desc">Highest score this week</div></div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="centered reveal">
+    <div class="section-tag">💳 Pricing</div>
+    <h2 class="section-title">Start Free, Unlock Everything</h2>
+    <p class="section-sub">Every student deserves a great start. Upgrade when you're ready for the full experience.</p>
+  </div>
+  <div class="pricing-grid reveal">
+    <div class="price-card">
+      <div class="price-tier">Free Plan</div>
+      <div class="price-amount">₦<sup></sup>0</div>
+      <div class="price-period">forever</div>
+      <ul class="price-features">
+        <li><span class="pf-icon">✅</span> 2 subjects access</li>
+        <li><span class="pf-icon">✅</span> Limited AI tutor (5 chats/day)</li>
+        <li><span class="pf-icon">✅</span> Diagnostic assessment</li>
+        <li><span class="pf-icon">✅</span> Basic progress tracking</li>
+        <li><span class="pf-icon" style="opacity:.35;">✅</span> <span style="opacity:.4;">Full subject library</span></li>
+        <li><span class="pf-icon" style="opacity:.35;">✅</span> <span style="opacity:.4;">Personalized learning path</span></li>
+      </ul>
+      <button class="price-btn outline" onclick="TN.cta()">Get Started Free</button>
+      <div class="price-sub">No credit card required</div>
+    </div>
+    <div class="price-card featured">
+      <div class="popular-tag">⭐ Most Popular</div>
+      <div class="price-tier" style="color:rgba(255,255,255,.7);">Premium Plan</div>
+      <div class="price-amount">₦<sup></sup>4,999</div>
+      <div class="price-period">per month per child</div>
+      <ul class="price-features">
+        <li><span class="pf-icon">✅</span> All subjects + teacher content</li>
+        <li><span class="pf-icon">✅</span> Unlimited AI tutor access</li>
+        <li><span class="pf-icon">✅</span> Full personalized learning path</li>
+        <li><span class="pf-icon">✅</span> Daily brain training</li>
+        <li><span class="pf-icon">✅</span> Parent progress reports</li>
+        <li><span class="pf-icon">✅</span> Premium badges & rewards</li>
+      </ul>
+      <button class="price-btn filled" onclick="TN.premium()">Start Premium Now</button>
+      <div class="price-sub" style="color:rgba(255,255,255,.5);">Cancel anytime · 7-day free trial</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="get-started">
+  <div class="reveal">
+    <h2 class="section-title">Ready to Transform How Your Child Learns?</h2>
+    <p>Join thousands of students already building smarter minds on ThinkNest.</p>
+    <div class="cta-btns">
+      <a href="#" class="btn-primary" onclick="TN.auth('register');return false">🚀 Start for Free Today</a>
+      <a href="#" class="btn-secondary">📞 Talk to Us</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <div class="logo">🪺 Think<span>Nest</span></div>
+    <p>Building smarter minds for the future — through AI-powered, personalized education for every student.</p>
+  </div>
+  <div>
+    <h5>Platform</h5>
+    <ul>
+      <li><a href="#">AI Tutor</a></li>
+      <li><a href="#">Learning Paths</a></li>
+      <li><a href="#">Brain Training</a></li>
+      <li><a href="#">Teacher Tools</a></li>
+    </ul>
+  </div>
+  <div>
+    <h5>Company</h5>
+    <ul>
+      <li><a href="#">About Us</a></li>
+      <li><a href="#">Blog</a></li>
+      <li><a href="#">Careers</a></li>
+      <li><a href="#">Press</a></li>
+    </ul>
+  </div>
+  <div>
+    <h5>Support</h5>
+    <ul>
+      <li><a href="#">Help Centre</a></li>
+      <li><a href="#">Privacy Policy</a></li>
+      <li><a href="#">Terms of Use</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">© 2025 ThinkNest. All rights reserved. Made with ❤️ for African students.</div>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => observer.observe(r));
+
+  // Role tabs
+  function switchRole(role, btn) {
+    document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.role-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('role-' + role).classList.add('active');
+  }
+
+</script>
+<script>window.THINKNEST_API = "/api"; // the website and API run on the same server</script>
+<script src="app.js"></script>
+</body>
+</html>
