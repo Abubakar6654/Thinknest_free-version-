@@ -15,9 +15,6 @@ const {
 } = process.env;
 if (!JWT_SECRET) { console.error('Set JWT_SECRET in .env'); process.exit(1); }
 
-// FREE_MODE=true -> every Premium feature is unlocked for everyone and payments are switched off
-const FREE_MODE = /^(1|true|yes)$/i.test(process.env.FREE_MODE || '');
-const TUTOR_DAILY_LIMIT = Number(process.env.TUTOR_DAILY_LIMIT) || 0;   // optional cap per student in FREE_MODE (0 = unlimited)
 const PREMIUM_KOBO = 499900;          // ₦4,999
 const PLAN_DAYS = 30;
 const FREE_TUTOR_PER_DAY = 5;
@@ -63,15 +60,6 @@ CREATE TABLE IF NOT EXISTS payments(
 `);
 for (const s of ['Mathematics', 'English Language', 'Basic Science', 'Social Studies'])
   db.prepare('INSERT OR IGNORE INTO subjects(name,is_default) VALUES(?,1)').run(s);
-for (const d of require('./diagnostic-data')) {
-  const sub = db.prepare('SELECT id FROM subjects WHERE name=?').get(d.subject);
-  if (!sub || db.prepare('SELECT 1 FROM quizzes WHERE is_diagnostic=1 AND subject_id=?').get(sub.id)) continue;
-  db.transaction(() => {
-    const qid = db.prepare(`INSERT INTO quizzes(subject_id,class_level,title,is_diagnostic,status) VALUES(?,'All',?,1,'approved')`).run(sub.id, d.title).lastInsertRowid;
-    const ins = db.prepare('INSERT INTO questions(quiz_id,type,prompt,options,answer) VALUES(?,?,?,?,?)');
-    for (const q of d.questions) ins.run(qid, q.type, q.prompt, q.options ? JSON.stringify(q.options) : null, q.answer);
-  })();
-}
 if (ADMIN_EMAIL && ADMIN_PASSWORD)
   db.prepare(`INSERT OR IGNORE INTO users(name,email,password_hash,role) VALUES('Admin',?,?,'admin')`)
     .run(ADMIN_EMAIL.toLowerCase(), bcrypt.hashSync(ADMIN_PASSWORD, 10));
@@ -79,10 +67,10 @@ if (ADMIN_EMAIL && ADMIN_PASSWORD)
 // ───────────── HELPERS ─────────────
 const today = () => new Date().toISOString().slice(0, 10);
 const level = (pts) => Math.floor(pts / 100) + 1;
-const isPremium = (u) => FREE_MODE || u.plan === 'premium' && u.plan_expires && new Date(u.plan_expires) > new Date();
+const isPremium = (u) => u.plan === 'premium' && u.plan_expires && new Date(u.plan_expires) > new Date();
 const publicUser = (u) => ({ id: u.id, name: u.name, email: u.email, role: u.role, age: u.age, class_level: u.class_level,
   goals: u.goals, plan: isPremium(u) ? 'premium' : 'free', plan_expires: u.plan_expires,
-  points: u.points, level: level(u.points), streak: u.streak, all_free: FREE_MODE });
+  points: u.points, level: level(u.points), streak: u.streak });
 const getUser = (id) => db.prepare('SELECT * FROM users WHERE id=?').get(id);
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch((e) => { console.error(e); res.status(500).json({ error: 'Server error' }); });
 const bad = (res, msg, code = 400) => res.status(code).json({ error: msg });
@@ -250,7 +238,7 @@ app.post('/api/quizzes', auth('teacher', 'admin'), (req, res) => {
   const status = req.user.role === 'admin' ? 'approved' : 'pending';
   const id = db.transaction(() => {
     const qid = db.prepare('INSERT INTO quizzes(subject_id,lesson_id,class_level,title,is_diagnostic,author_id,status) VALUES(?,?,?,?,?,?,?)')
-      .run(subject_id, lesson_id || null, str(class_level, 30), str(title, 200), req.body.is_diagnostic ? 1 : 0, req.user.id, status).lastInsertRowid;
+      .run(subject_id, lesson_id || null, str(class_level, 30), str(title, 200), req.user.role === 'admin' && req.body.is_diagnostic ? 1 : 0, req.user.id, status).lastInsertRowid;
     const ins = db.prepare('INSERT INTO questions(quiz_id,type,prompt,options,answer) VALUES(?,?,?,?,?)');
     for (const q of questions) ins.run(qid, q.type, str(q.prompt), q.type === 'multiple_choice' ? JSON.stringify(q.options.map((o) => str(o, 300))) : null, str(q.answer, 500));
     return qid;
@@ -280,7 +268,7 @@ app.post('/api/quizzes/:id/submit', auth('student'), (req, res) => {
   const answers = req.body.answers || {};
   const qs = db.prepare('SELECT * FROM questions WHERE quiz_id=?').all(quiz.id);
   const norm = (s) => String(s ?? '').trim().toLowerCase();
-  const results = qs.map((q) => ({ question_id: q.id, correct: q.answer.split('||').some((a) => norm(a) === norm(answers[q.id])), correct_answer: q.answer.split('||')[0] }));
+  const results = qs.map((q) => ({ question_id: q.id, correct: norm(answers[q.id]) === norm(q.answer), correct_answer: q.answer }));
   const score = results.filter((r) => r.correct).length;
   db.prepare('INSERT INTO attempts(user_id,quiz_id,subject_id,score,total) VALUES(?,?,?,?,?)').run(req.user.id, quiz.id, quiz.subject_id, score, qs.length);
   award(req.user.id, score * 5);
@@ -337,10 +325,9 @@ app.post('/api/tutor', auth('student'), rateLimit({ windowMs: 60_000, limit: 20 
   if (!ANTHROPIC_API_KEY) return bad(res, 'AI tutor not configured', 503);
   const message = str(req.body.message, 2000);
   if (!message) return bad(res, 'Message required');
-  const cap = FREE_MODE ? TUTOR_DAILY_LIMIT : (isPremium(req.user) ? 0 : FREE_TUTOR_PER_DAY);
-  if (cap) {
+  if (!isPremium(req.user)) {
     const used = db.prepare('SELECT count FROM tutor_usage WHERE user_id=? AND day=?').get(req.user.id, today())?.count || 0;
-    if (used >= cap) return bad(res, FREE_MODE ? `You've reached today's limit of ${cap} tutor chats. Come back tomorrow!` : `Free plan allows ${FREE_TUTOR_PER_DAY} tutor chats a day. Upgrade for unlimited access.`, FREE_MODE ? 429 : 402);
+    if (used >= FREE_TUTOR_PER_DAY) return bad(res, `Free plan allows ${FREE_TUTOR_PER_DAY} tutor chats a day. Upgrade for unlimited access.`, 402);
   }
   const history = (Array.isArray(req.body.history) ? req.body.history : []).slice(-10)
     .filter((m) => ['user', 'assistant'].includes(m.role) && typeof m.content === 'string').map((m) => ({ role: m.role, content: m.content.slice(0, 2000) }));
@@ -377,7 +364,6 @@ function activatePayment(reference, amount, status) {
 }
 // Parent pays for a child (student_id), or a student pays for themselves
 app.post('/api/payments/initialize', auth('parent', 'student'), wrap(async (req, res) => {
-  if (FREE_MODE) return bad(res, 'Everything is already unlocked in this version', 400);
   if (!PAYSTACK_SECRET_KEY) return bad(res, 'Payments not configured', 503);
   const benId = req.user.role === 'parent' ? Number(req.body.student_id) : req.user.id;
   const ben = getUser(benId);
@@ -428,7 +414,6 @@ app.get('/api/admin/stats', auth('admin'), (req, res) => res.json({
   lessons: db.prepare('SELECT COUNT(*) c FROM lessons').get().c, quiz_attempts: db.prepare('SELECT COUNT(*) c FROM attempts').get().c,
   tutor_chats_today: db.prepare('SELECT COALESCE(SUM(count),0) s FROM tutor_usage WHERE day=?').get(today()).s }));
 
-app.get('/api/config', (req, res) => res.json({ all_free: FREE_MODE }));
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 // The website (landing page + app) is served by this same server
 app.use(express.static(path.join(__dirname, 'public')));
